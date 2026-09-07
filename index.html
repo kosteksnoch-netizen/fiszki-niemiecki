@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiszki Niemiecki</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f4f4f9;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+margin: 0;
+}
+.box {
+background: white;
+padding: 25px;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+text-align: center;
+width: 340px;
+}
+.card {
+border: 2px solid #333;
+border-radius: 8px;
+padding: 20px;
+margin: 20px 0;
+cursor: pointer;
+background: #fafafa;
+min-height: 80px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}
+.de {
+font-size: 1.3rem;
+font-weight: bold;
+color: #2c3e50;
+}
+.pl {
+font-size: 1.1rem;
+color: #e74c3c;
+margin-top: 15px;
+display: none;
+}
+button {
+background: #27ae60;
+color: white;
+border: none;
+padding: 12px 20px;
+font-size: 1rem;
+border-radius: 6px;
+cursor: pointer;
+width: 100%;
+margin-top: 5px;
+}
+button.show {
+background: #2980b9;
+margin-bottom: 8px;
+}
+.counter {
+font-size: 0.85rem;
+color: #7f8c8d;
+margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Fiszki Niemieckie</h2>
+<div class="card" onclick="pokazTlumaczenie()">
+<div class="de" id="wpis-de">Kliknij przycisk poniżej</div>
+<div class="pl" id="wpis-pl">...</div>
+</div>
+<button class="show" onclick="pokazTlumaczenie()">Pokaż / Ukryj tłumaczenie 👁️</button>
+<button onclick="losujFiszke()">Losuj nową fiszkę 🎲</button>
+<div class="counter" id="licznik"></div>
+</div>
+
+<script>
+const fiszki = [
+// Zdjęcie 1 & 2 (zeszyt w linie / tabelka)
+{ de: "rennen", pl: "biegać" },
+{ de: "Geld sammeln", pl: "zbierać pieniądze" },
+{ de: "schulden", pl: "być dłużnym" },
+{ de: "gelingen", pl: "udać się, powieść się" },
+{ de: "ungewöhnlich", pl: "niezwykły" },
+{ de: "regelmäßig", pl: "regularnie" },
+{ de: "verzichten auf (+Akk.)", pl: "rezygnować z" },
+{ de: "gründen", pl: "tworzyć, zakładać" },
+{ de: "breit", pl: "szeroki" },
+{ de: "drehen", pl: "nakręcić, kręcić, obracać, skręcić" },
+{ de: "Der Parfumeur", pl: "perfumiarz" },
+{ de: "die Geburt", pl: "poród, narodziny" },
+{ de: "töten", pl: "zabić, zabijać" },
+{ de: "erfolgreich", pl: "wieńczony sukcesem, udany, skuteczny" },
+{ de: "verschiedene", pl: "różny, różnorodny" },
+{ de: "der Regisseur", pl: "reżyser" },
+{ de: "betont", pl: "zdecydowany, orientacyjny" },
+{ de: "fehlen", pl: "brakować, dolegać" },
+{ de: "derselbe / dieselbe / dasselbe", pl: "ten sam, ta sama, to samo" },
+{ de: "der Kommissar", pl: "komisarz" },
+{ de: "verheiratet", pl: "żonaty, zamężna" },
+{ de: "verheiraten", pl: "żenić (kogoś), wydawać za mąż" },
+{ de: "die Schuld", pl: "wina, dług" },
+{ de: "Verschulden", pl: "zadłużenie" },
+{ de: "klappen", pl: "udawać się" },
+{ de: "das Gelingen", pl: "powodzenie" },
+{ de: "das Ungewöhnliche", pl: "niezwykłość" },
+{ de: "die Regel", pl: "zasada" },
+{ de: "die Regelmäßigkeit", pl: "regularność" },
+{ de: "auf Details verzichten", pl: "nie wdawać się w szczegóły" },
+{ de: "der Grund", pl: "powód" },
+{ de: "die Gründung", pl: "założenie, fundacja" },
+{ de: "der Gründer", pl: "założyciel" },
+{ de: "begründen", pl: "uzasadnić" },
+{ de: "die Breite", pl: "szerokość" },
+{ de: "die Breitseite", pl: "bok" },
+{ de: "sich drehen", pl: "kręcić się" },
+{ de: "das Dreieck", pl: "trójkąt" },
+{ de: "die Drehung", pl: "obrót, rotacja" },
+{ de: "das Parfüm", pl: "perfumy" },
+{ de: "gebären", pl: "rodzić" },
+{ de: "die Geburtsstunde", pl: "narodziny (godzina narodzin)" },
+{ de: "tot", pl: "martwy" },
+{ de: "die Tötung", pl: "zabójstwo" },
+{ de: "der Erfolg", pl: "sukces" },
+{ de: "die erfolgreiche Zusammenarbeit", pl: "udana współpraca" },
+{ de: "verschiedentlich", pl: "niejednokrotnie" },
+{ de: "die Verschiedenheit", pl: "różnorodność" },
+{ de: "Verschiedenartig", pl: "rozmaity" },
+{ de: "etw. betonen", pl: "podkreślać coś" },
+{ de: "betonen", pl: "kłaść nacisk" },
+{ de: "selbe, selber, selbes", pl: "ten sam, ta sama, to samo" },
+{ de: "die Kommission", pl: "komisja" },
+{ de: "das Kommissariat", pl: "komisariat" },
+{ de: "heiraten", pl: "brać ślub" },
+{ de: "die Hochzeit", pl: "ślub" },
+
+// Zdjęcie 2 (Stunde)
+{ de: "außerhalb", pl: "poza" },
+{ de: "abwechslungsreich", pl: "urozmaicony (die Abwechslung)" },
+{ de: "auftreiben", pl: "uzbierać w górę, załatwić, skombinować" },
+{ de: "aufwendig", pl: "kosztowny, czasochłonny" },
+{ de: "ausgeprägt", pl: "wyraźny, wydatny, rozwinięty, wyrazisty" },
+{ de: "der Durchbruch, -¨e", pl: "przełom, przełamanie, przerwanie" },
+{ de: "einlassen, sich auf etw.", pl: "zgadzać się na coś" },
+{ de: "einzigartig", pl: "jedyny w swoim rodzaju, niepowtarzalny" },
+{ de: "erscheinen", pl: "pojawiać się, zostać opublikowanym, wydawać się" },
+{ de: "erwischen", pl: "złapać, przyłapać, złapać kogoś/coś" },
+{ de: "der Filmvorführer", pl: "kinooperator" },
+{ de: "gelassen", pl: "opanowany" },
+{ de: "der Geruchssinn (Geruch)", pl: "zmysł węchu" },
+{ de: "hektisch", pl: "pośpiesznie, gorączkowo" },
+{ de: "scheitern", pl: "nie powieść się, ponieść porażkę" },
+{ de: "schlüpfen", pl: "wyślizgnąć się, wymykać się" },
+{ de: "überfallen", pl: "napadać, napaść, przeskakiwać przeszkodę" },
+{ de: "der Umgang", pl: "kontakt, stosunki, towarzystwo" },
+{ de: "unbrauchbar", pl: "nieprzydatny, nienadający się do użytku" },
+{ de: "verzweifelt", pl: "zrozpaczony, desperacki" },
+{ de: "die Voraussetzung, -en", pl: "założenie, przesłanka, wymóg, warunek" },
+{ de: "das Zeichentrickelement, -e", pl: "element z filmu animowanego" },
+{ de: "der Zeitsprung, -¨e", pl: "przeskok w czasie" },
+{ de: "unterhaltsam", pl: "wesoły, zajmujący" },
+{ de: "beschaffen", pl: "nabyć, kupić, dobrać się, postarać się" },
+{ de: "stark, heftig", pl: "silny, gwałtowny" },
+{ de: "einen Film machen", pl: "robić film" },
+{ de: "das Ergebnis", pl: "wynik" },
+{ de: "wagen", pl: "ośmielić się, śmieć, zaryzykować" },
+{ de: "einmalig, ohne Beispiel", pl: "jednorazowy, bez precedensu" },
+{ de: "fangen", pl: "łapać, chwytać" },
+{ de: "festhalten", pl: "przetrzymywać, trzymać" },
+{ de: "ruhig, geduldig", pl: "spokojny, cierpliwy" },
+{ de: "Fähigkeit", pl: "umiejętność, zdolność" },
+{ de: "ruhelos, unruhig, rastlos", pl: "niespokojny, bez wypoczynku" },
+{ de: "Misserfolg, Pech haben", pl: "porażka, mieć pecha" },
+{ de: "ausrauben, Geld stehlen", pl: "obrabować, kraść pieniądze" },
+{ de: "Kontakt, Kommunikation", pl: "kontakt, komunikacja" },
+{ de: "nutzlos, unfähig", pl: "bezużyteczny, niezdolny" },
+{ de: "hoffnungslos, ausweglos", pl: "beznadziejny, bez wyjścia" },
+{ de: "Grundlage, Bedingung, Fundament", pl: "podstawa, warunek, fundament" },
+
+// Zdjęcie 3 (zeszyt w kratkę - strona z "hektisch...")
+{ de: "verschwinden", pl: "znikać" },
+{ de: "gegensätzlich", pl: "kontrastowy" },
+{ de: "gruseln", pl: "straszyć" },
+{ de: "die Spinne", pl: "pająk" },
+{ de: "Allerheiligen", pl: "Święto Wszystkich Świętych" },
+{ de: "wegwerfen", pl: "wyrzucać" },
+{ de: "leuchten", pl: "świecić" },
+{ de: "schaurig", pl: "upiorny, dziwny, straszny" },
+{ de: "der Kürbis", pl: "dynia" },
+{ de: "erwerben", pl: "otrzymywać, nabywać" },
+{ de: "geheimnisvoll", pl: "pełen tajemnic" },
+{ de: "die Stiftung", pl: "fundacja, organizacja" },
+{ de: "verpachtet werden", pl: "zostać wydzierżawionym" },
+{ de: "die Siegermächte", pl: "zwycięzcy" },
+{ de: "restlich", pl: "pozostały" },
+{ de: "Streiche spielen", pl: "płatać figle" },
+{ de: "halbiert", pl: "przepołowiony" },
+{ de: "die Hälfte", pl: "połowa" },
+{ de: "der Einwanderer", pl: "imigrant" },
+{ de: "die Umfrage, -n", pl: "ankieta" },
+{ de: "verdrängen", pl: "wypychać, wypierać" },
+{ de: "der Weltraum", pl: "kosmos" },
+
+// Zdjęcie 4 & 5 (krótkie wycinki z kratki)
+{ de: "Wenn", pl: "jeżeli" },
+{ de: "das Wort, -¨er", pl: "słowo" },
+{ de: "sich merken", pl: "zapamiętać coś sobie" },
+{ de: "ein paar Mal", pl: "parę / kilka razy" },
+{ de: "nützlich", pl: "przydatny" },
+{ de: "einiger", pl: "niektóre" },
+{ de: "damit", pl: "żeby" },
+{ de: "meiner Meinung nach", pl: "moim zdaniem" },
+{ de: "erfordern", pl: "wymagać" },
+{ de: "für sich selbst", pl: "dla siebie" },
+{ de: "ins Ausland gehen", pl: "wyjechać za granicę" },
+{ de: "welcher", pl: "który" },
+
+// Zdjęcie 6 (ostatni wycinek z kratki)
+{ de: "handeln von", pl: "traktować o, opisywać" },
+{ de: "es stellt sich heraus, dass...", pl: "okazuje się, że..." },
+{ de: "teilen", pl: "dzielić, podzielić" },
+{ de: "eine andere Meinung hat", pl: "mieć inną opinię" },
+{ de: "der Beitrag", pl: "artykuł, wkład" },
+{ de: "etwas gehen um", pl: "być mowa o czymś" }
+];
+
+let pula = [...fiszki];
+
+function losujFiszke() {
+if (pula.length === 0) {
+pula = [...fiszki];
+}
+
+const randomIndex = Math.floor(Math.random() * pula.length);
+const wybrane = pula.splice(randomIndex, 1)[0];
+
+document.getElementById('wpis-de').innerText = wybrane.de;
+document.getElementById('wpis-pl').innerText = wybrane.pl;
+document.getElementById('wpis-pl').style.display = 'none';
+
+document.getElementById('licznik').innerText = `Pozostało w cyklu: ${pula.length} z ${fiszki.length}`;
+}
+
+function pokazTlumaczenie() {
+const el = document.getElementById('wpis-pl');
+if (el.style.display === 'none' || el.style.display === '') {
+el.style.display = 'block';
+} else {
+el.style.display = 'none';
+}
+}
+
+losujFiszke();
+</script>
+
+</body>
+</html>
